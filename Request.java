@@ -12,11 +12,11 @@ import javax.swing.JPanel;
 
 public class Request extends JFrame {
 	private static String[] locations = {"",
-										"CL50 - Class of 1950 Lecture Hall", 
-										"EE - Electrical Engineering Building", 
-										"LWSN - Lawson Computer Science Building", 
-										"PMU - Purdue Memorial Union", 
-										"PUSH - Purdue University Student Health Center"};
+					"CL50 - Class of 1950 Lecture Hall", 
+					"EE - Electrical Engineering Building", 
+					"LWSN - Lawson Computer Science Building", 
+					"PMU - Purdue Memorial Union", 
+					"PUSH - Purdue University Student Health Center"};
 	private JComboBox pickLocation;
 	private JButton submitButton;
 	private JLabel statusLabel;
