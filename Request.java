@@ -1,22 +1,14 @@
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
 public class Request extends JFrame {
 	private static String[] locations = {"",
-					"CL50 - Class of 1950 Lecture Hall", 
-					"EE - Electrical Engineering Building", 
-					"LWSN - Lawson Computer Science Building", 
-					"PMU - Purdue Memorial Union", 
-					"PUSH - Purdue University Student Health Center"};
+						"CL50 - Class of 1950 Lecture Hall", 
+						"EE - Electrical Engineering Building", 
+						"LWSN - Lawson Computer Science Building", 
+						"PMU - Purdue Memorial Union", 
+						"PUSH - Purdue University Student Health Center"};
 	private JComboBox pickLocation;
 	private JButton submitButton;
 	private JLabel statusLabel;
