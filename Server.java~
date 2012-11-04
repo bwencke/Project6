@@ -15,12 +15,12 @@ class Server{
       public void messageReceived(String message, int clientID) {
         try{
         if(responders.size() == 0){
-          reqChannel.sendMessage("Searching:", clientID);
+          reqChannel.sendMessage("Searching", clientID);
           requesters.add(clientID);
           
         }else{
-          reqChannel.sendMessage("Assigned: Help Team X", clientID);
-          respChannel.sendMessage("Assigned: Location X", responders.getFirst());
+          reqChannel.sendMessage("Someone is on the way!", clientID);
+          respChannel.sendMessage("Go to ...", responders.getFirst());
         }
         }catch(ChannelException e){
           e.printStackTrace();
@@ -33,12 +33,12 @@ class Server{
       public void messageReceived(String message, int clientID) {
         try{
         if(requesters.size() == 0){
-          respChannel.sendMessage("Searching:", clientID);
+          respChannel.sendMessage("Searching", clientID);
           responders.add(clientID);
           
         }else{
-          reqChannel.sendMessage("Assigned: Help Team X", requesters.getFirst());
-          respChannel.sendMessage("Assigned: Location X", clientID);
+          reqChannel.sendMessage("Someone is on the way!", clientID);
+          respChannel.sendMessage("Go to ...", responders.getFirst());
         }
         }catch(ChannelException e){
           e.printStackTrace();
