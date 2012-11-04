@@ -1,5 +1,6 @@
 import edu.purdue.cs.cs180.channel.*;
 import java.util.LinkedList;
+import java.util.Scanner;
 
 class Server{
   TCPChannel reqChannel;
@@ -55,8 +56,13 @@ class Server{
   }
   
   public static void main(String[] args){
+    Scanner s = new Scanner(System.in);
     Server server = new Server(8888,9999);
-    
+    while(true){
+      if(s.nextLine().equals("exit")){
+        break;
+      }
+    }
   }
 }
 
