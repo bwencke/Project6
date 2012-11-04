@@ -3,16 +3,20 @@ import java.util.LinkedList;
 import java.util.Scanner;
 
 class Server{
-  TCPChannel reqChannel;
-  TCPChannel respChannel;
-  LinkedList<Integer> requesters = new LinkedList<Integer>();
-  LinkedList<Integer> responders = new LinkedList<Integer>();
-  LinkedList<String> requestersLocation = new LinkedList<String>();
-  LinkedList<String> respondersTeam = new LinkedList<String>();
+  public TCPChannel reqChannel;
+  public TCPChannel respChannel;
+  LinkedList<Integer> requesters;
+  LinkedList<Integer> responders;
+  LinkedList<String> requestersLocation;
+  LinkedList<String> respondersTeam;
   
   public Server(int reqPort, int recPort) {
     reqChannel = new TCPChannel(reqPort);
     respChannel = new TCPChannel(recPort);
+    requesters = new LinkedList<Integer>();
+    responders = new LinkedList<Integer>();
+    requestersLocation = new LinkedList<String>();
+    respondersTeam = new LinkedList<String>();
     
     reqChannel.setMessageListener(new MessageListener(){
       public void messageReceived(String message, int clientID) {
@@ -60,6 +64,12 @@ class Server{
     Server server = new Server(8888,9999);
     while(true){
       if(s.nextLine().equals("exit")){
+        try{
+        server.respChannel.close();
+        server.reqChannel.close();
+        }catch(ChannelException e){
+          e.printStackTrace();
+        }
         break;
       }
     }
