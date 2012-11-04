@@ -1,0 +1,13 @@
+// Team composition
+// Team leader: Wencke, Ben, bwencke
+// Team member 1: Aralis, Alex, aaaralis
+// Team member 2: SerVaas, Curtis, cservaas
+
+// Team leader: Wencke, Ben, bwencke
+// Request.java
+
+// Team member 1: Aralis, Alex, aaralis
+// Server.java
+
+// Team member 2: SerVaas, Curtis, cservaas
+// Response.java
