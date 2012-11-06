@@ -18,11 +18,11 @@ import edu.purdue.cs.cs180.channel.*;
 public class Request extends JFrame implements MessageListener {
 	private Channel channel = null;
 	private static String[] locations = {"",
-										"CL50 - Class of 1950 Lecture Hall", 
-										"EE - Electrical Engineering Building", 
-										"LWSN - Lawson Computer Science Building", 
-										"PMU - Purdue Memorial Union", 
-										"PUSH - Purdue University Student Health Center"}; // all the possible pick up locations
+					"CL50 - Class of 1950 Lecture Hall", 
+					"EE - Electrical Engineering Building" 
+					"LWSN - Lawson Computer Science Building", 
+					"PMU - Purdue Memorial Union", 
+					"PUSH - Purdue University Student Health Center"}; // all the possible pick up locations
 	// the GUI elements
 	private JComboBox pickLocation;
 	private JButton submitButton;
@@ -120,7 +120,11 @@ public class Request extends JFrame implements MessageListener {
 	 * also checks to see if the message is an assigned message
 	 */
 	public void messageReceived(String arg0, int arg1) {
-		statusLabel.setText(arg0);
+		if(arg0.startsWith("Searching")) {
+			statusLabel.setText("Searching");
+		} else {
+			statusLabel.setText(arg0);
+		}	
 		if(arg0.startsWith("Assigned")) {
 			pickLocation.setEnabled(true); // enable the drop down
 			submitButton.setEnabled(true); // enable the submit button
