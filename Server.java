@@ -35,7 +35,7 @@ class Server{
         
         try{
           if(message.charAt(7) == ':'){//if message is from the requester then...
-            Location location = encodeLocationString(message.substring(7, message.length())); //
+            Location location = encodeLocationString(message.substring(8, message.length())); //
             
             if(location == null){//if location was assigned a null value then...
               channel.sendMessage("The location you submitted was invalid!!!", clientID);//informs the requester that the location they submitted was invalid
@@ -54,7 +54,7 @@ class Server{
             }
             
           }else if(message.charAt(8) == ':'){//if the message is from responders
-            String teamString = message.substring(8, message.length());
+            String teamString = message.substring(9, message.length());
             
             if(requestersID.size() == 0){//if there are no backlogged requesters then...
               channel.sendMessage("Searching:", clientID);//tell the responder they need to wait
