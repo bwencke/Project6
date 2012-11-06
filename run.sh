@@ -14,7 +14,7 @@ while [ 1 != 2 ]; do
 		java -classpath .:./Channel.jar Response localhost 8188&
 	elif [ "$input" = "Server" ]; then
 		echo "You only need to run one server, dumby."
-	elif [ "$input" = "exit"]; then
+	elif [ "$input" = "exit" ]; then
 		break
 	fi
 done
