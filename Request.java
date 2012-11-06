@@ -17,9 +17,8 @@ import edu.purdue.cs.cs180.channel.*;
  */
 public class Request extends JFrame implements MessageListener {
 	private Channel channel = null;
-	private static String[] locations = {"",
-					"CL50 - Class of 1950 Lecture Hall", 
-					"EE - Electrical Engineering Building" 
+	private static String[] locations = {"","CL50 - Class of 1950 Lecture Hall",
+					"EE - Electrical Engineering Building", 
 					"LWSN - Lawson Computer Science Building", 
 					"PMU - Purdue Memorial Union", 
 					"PUSH - Purdue University Student Health Center"}; // all the possible pick up locations
