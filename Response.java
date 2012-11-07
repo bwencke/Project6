@@ -18,10 +18,9 @@ import edu.purdue.cs.cs180.channel.*;
 public class Response extends JFrame implements MessageListener {
 	private Channel channel = null;
 	
-	// the GUI elements
-	
-	private JButton readyButton;
-	private JLabel statusLabel;
+
+	private JButton readyButton; // the field for the readyButton
+	private JLabel statusLabel; // the field for the label that displays when the readyButton is pushed. 
 	
 	/**
 	 * constructs a new Response object
@@ -33,21 +32,21 @@ public class Response extends JFrame implements MessageListener {
 	public Response(String host, int port) {
 		
 		// create submit button
-		readyButton = new JButton("Ready");
-		readyButton.addActionListener(new ActionListener() {
+		readyButton = new JButton("Ready"); // the readyButton says "ready"
+		readyButton.addActionListener(new ActionListener() { //when the button is pressed, it calls readySubmit. 
 			public void actionPerformed(ActionEvent e) {
 				readySubmit(); // submit the location when clicked
 			}
 		});
 		
-		// create status label
-		statusLabel = new JLabel("");
+		statusLabel = new JLabel(""); // the status label is initially blank. 
 		
-		// create the GUI design by using panels
 		// CONTROLS
-		Container controlsPane = new JPanel();
-		controlsPane.setLayout(new FlowLayout()); // organized the elements horizontally
-		controlsPane.add(readyButton); // add the submit button
+		Container controlsPane = new JPanel(); // creates the control panel 
+		controlsPane.setLayout(new FlowLayout()); // sets the layout for the outer panel
+		controlsPane.add(readyButton); // add the submit button for the control panel. 
+		
+		
 		
 		// LABEL
 		Container labelPane = new JPanel();
@@ -59,6 +58,7 @@ public class Response extends JFrame implements MessageListener {
 		contentPane.setLayout(new GridLayout(2,1)); // organize the panels vertically
 		contentPane.add(controlsPane); // add the panel with the controls first
 		contentPane.add(labelPane); // then add the panel with the label beneath
+				
 		
 		// set window properties
 		this.setTitle("Response");
@@ -93,7 +93,7 @@ public class Response extends JFrame implements MessageListener {
 	private void readySubmit() {
 			readyButton.setEnabled(false); // disable the ready button
 			
-			// send the Readiness to the server
+			// tell the server that the volunteer is ready. 
 			try {
 				channel.sendMessage("Response:" + "Help Team X"); // send message with location
 			} catch (ChannelException e) {
@@ -107,7 +107,7 @@ public class Response extends JFrame implements MessageListener {
 	 * also checks to see if the message is an assigned message
 	 */
 	public void messageReceived(String arg0, int arg1) {
-		statusLabel.setText(arg0);
+		statusLabel.setText(arg0); // sets the status bar with "searching" or "assigned"
 		this.pack(); // adjusts the window.
 		
 	}
