@@ -108,6 +108,7 @@ public class Response extends JFrame implements MessageListener {
 	 */
 	public void messageReceived(String arg0, int arg1) {
 		statusLabel.setText(arg0); // sets the status bar with "searching" or "assigned"
+                readyButton.setEnabled(true); // enable the ready button
 		this.pack(); // adjusts the window.
 		
 	}
