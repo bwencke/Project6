@@ -1,12 +1,11 @@
-import java.awt.*;
+timport java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import edu.purdue.cs.cs180.channel.*;
 /**
- * Project 6 -- SafeWalk 1.0
- * provides a GUI for users to request a ride from one of 5 location around campus,
- * another GUI for responders to use so that they know where to pick up the person who needs a ride,
- * and uses a server for efficient requester and responder communication and allocation
+ * Project 6 -- Response
+ * provides a GUI for volunteers to respond to requests for rides,
+ * which then sends the response team to a server
  * 
  * @author cservaas
  * 
@@ -23,11 +22,11 @@ public class Response extends JFrame implements MessageListener {
 	private JLabel statusLabel; // the field for the label that displays when the readyButton is pushed. 
 	
 	/**
-	 * constructs a new Response object
+	 * creates a new Response object
 	 * 
-	 * @param host a String that represents the hostname of the server
+	 * @param host a String that represents the server host
 	 * 
-	 * @param port an integer that represents the port that the server is running on
+	 * @param port an integer that represents the port used by the server
 	 */
 	public Response(String host, int port) {
 		
@@ -64,11 +63,11 @@ public class Response extends JFrame implements MessageListener {
 		this.setTitle("Response");
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
-		// pack and show!
+		// finish up
 		this.pack();
 		this.setVisible(true);
 		
-		// initialize the communication channel using the host and port provided by the user
+		// open the communication channel
 		initChannel(host, port);
 	}
 	
