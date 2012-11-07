@@ -122,12 +122,12 @@ public class Request extends JFrame implements MessageListener {
 		if(arg0.startsWith("Searching")) {
 			statusLabel.setText("Searching");
 		} else {
-			statusLabel.setText(arg0);
-		}	
-		if(arg0.startsWith("Assigned")) {
+			String labelText = arg0.substring(arg0.indexOf(':')+1);;
+			statusLabel.setText("Assigned: " + labelText);
 			pickLocation.setEnabled(true); // enable the drop down
 			submitButton.setEnabled(true); // enable the submit button
 		}
+		this.pack();
 	}
 
 	public static void main(String[] args) {
