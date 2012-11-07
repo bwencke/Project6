@@ -40,24 +40,21 @@ public class Response extends JFrame implements MessageListener {
 		
 		statusLabel = new JLabel(""); // the status label is initially blank. 
 		
-		// CONTROLS
+		// CONTAINERS
 		Container controlsPane = new JPanel(); // creates the control panel 
-		controlsPane.setLayout(new FlowLayout()); // sets the layout for the outer panel
-		controlsPane.add(readyButton); // add the submit button for the control panel. 
-		
-		
-		
-		// LABEL
 		Container labelPane = new JPanel();
-		labelPane.setLayout(new FlowLayout()); // center the label
-		labelPane.add(statusLabel); // add the label
-		
-		// add everything to the window
 		Container contentPane = this.getContentPane(); // get the window's content pane
+		
+		// LAYOUTS
+		controlsPane.setLayout(new FlowLayout()); // sets the layout for the outer panel
+		labelPane.setLayout(new FlowLayout()); // center the label
 		contentPane.setLayout(new GridLayout(2,1)); // organize the panels vertically
+		
+		// ADD ELEMENTS
+		controlsPane.add(readyButton); // add the submit button for the control panel. 
+		labelPane.add(statusLabel); // add the label
 		contentPane.add(controlsPane); // add the panel with the controls first
-		contentPane.add(labelPane); // then add the panel with the label beneath
-				
+		contentPane.add(labelPane); // then add the panel with the label beneath		
 		
 		// set window properties
 		this.setTitle("Response");
@@ -79,7 +76,7 @@ public class Response extends JFrame implements MessageListener {
 	 */
 	private void initChannel(String host, int port) {
 		try {
-			channel = new TCPChannel(host, port); // create new TCPChannel object with specified values
+			channel = new TCPChannel(host, port); // create TCPChannel object
 			channel.setMessageListener(this); // have this Response object listen for messages (messageReceived())
 		} catch (ChannelException e) {
 			e.printStackTrace();
@@ -87,14 +84,14 @@ public class Response extends JFrame implements MessageListener {
 	}
 	
 	/**
-	 * submits the location Response to the server
+	 * submits the Response to the server
 	 */
 	private void readySubmit() {
 			readyButton.setEnabled(false); // disable the ready button
 			
 			// tell the server that the volunteer is ready. 
 			try {
-				channel.sendMessage("Response:" + "Help Team X"); // send message with location
+				channel.sendMessage("Response:" + "Help Team X"); // send message with team
 			} catch (ChannelException e) {
 				e.printStackTrace();
 			}
@@ -102,23 +99,22 @@ public class Response extends JFrame implements MessageListener {
 
 	@Override
 	/**
-	 * listens for a message and sets the label text when one is received
-	 * also checks to see if the message is an assigned message
+	 * listens for a location message and displays information accordingly
 	 */
 	public void messageReceived(String arg0, int arg1) {
-		String location = arg0.substring(10);
+		String location = arg0.substring(10); // create String that holds the assignment location
 		if(location.length() == 0) {
-			statusLabel.setText(arg0.substring(0,9));
+			statusLabel.setText(arg0.substring(0,9)); // if the location is blank, set the label to "Searching"
 		} else {
-			statusLabel.setText("Assigned: " + arg0.substring(9));
-			readyButton.setEnabled(true);
+			statusLabel.setText("Assigned: " + arg0.substring(9)); // else, show the location
+			readyButton.setEnabled(true); // re-enable the readyButton 
 		}
 		this.pack(); // adjusts the window.
 		
 	}
 	
 	public static void main(String[] args) {
-		new Response(args[0], Integer.parseInt(args[1])); // create new Response object with the values entered by the user
+		new Response(args[0], Integer.parseInt(args[1])); // create new Response object with args values
 	}
 }
 
