@@ -1,4 +1,4 @@
-timport java.awt.*;
+import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import edu.purdue.cs.cs180.channel.*;
