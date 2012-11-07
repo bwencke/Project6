@@ -91,7 +91,7 @@ public class Response extends JFrame implements MessageListener {
 			
 			// tell the server that the volunteer is ready. 
 			try {
-				channel.sendMessage("Response:" + "Help Team X"); // send message with team
+				channel.sendMessage("Response:" + "Help Team" + channel.getID()); // send message with team
 			} catch (ChannelException e) {
 				e.printStackTrace();
 			}
