@@ -107,8 +107,13 @@ public class Response extends JFrame implements MessageListener {
 	 * also checks to see if the message is an assigned message
 	 */
 	public void messageReceived(String arg0, int arg1) {
-		statusLabel.setText(arg0); // sets the status bar with "searching" or "assigned"
-                readyButton.setEnabled(true); // enable the ready button
+		String location = arg0.substring(10);
+		if(location.length() == 0) {
+			statusLabel.setText(arg0.substring(0,9));
+		} else {
+			statusLabel.setText("Assigned: " + arg0.substring(9));
+			readyButton.setEnabled(true);
+		}
 		this.pack(); // adjusts the window.
 		
 	}
