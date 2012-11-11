@@ -20,118 +20,178 @@ class Server{
   public TCPChannel channel;//probably should have a get method for the request and responder channels but made them public insead because im lazy
   private LinkedList<Integer> requestersID;//list of backlogged requesters
   private LinkedList<Integer> respondersID;//list of backlogged responders
-  private LinkedList<Location> requestersLocation;//list of places that the requesters are located at.  Corresponds to the requester ID list
+  private LinkedList<String> requestersUrgency;
+  private LinkedList<String> requestersLocation;//list of places that the requesters are located at.  Corresponds to the requester ID list
+  private LinkedList<String> respondersLocation;
   private LinkedList<String> respondersTeam;//list of teams that the responders are on.  Corresponds to the responder ID list.
   
-  public Server(int port){
+  public Server(int port, final int MATCH_TYPE){
     channel = new TCPChannel(port);//init of all the object variables for the server
     requestersID = new LinkedList<Integer>();
     respondersID = new LinkedList<Integer>();
-    requestersLocation = new LinkedList<Location>();
+    requestersLocation = new LinkedList<String>();
     respondersTeam = new LinkedList<String>();
+    requestersUrgency = new LinkedList<String>();
     
     channel.setMessageListener(new MessageListener(){
-      public void messageReceived(String message, int clientID){//when a message is received by a requester then...
-        
+      private int getRespondersIndex(String location, String urgency, int MATCH_TYPE){
+        switch(MATCH_TYPE){
+          case 0://FCFS
+            return 0;
+            
+          case 1://Closest
+          case 2://Urgency
+            return getShortestDistance(location, respondersLocation);
+            
+          default://String mismatch
+            return -1;
+        }
+      }
+      
+      private int getRequestersIndex(String helpTeam, String location, int MATCH_TYPE){
+        switch(MATCH_TYPE){
+          case 0://FCFS
+          case 1://Closest
+            return 0;
+            
+          case 2://Urgency
+            if(requestersUrgency.indexOf("Emergency") != -1)
+              return requestersUrgency.indexOf("Emergency");
+            
+            if(requestersUrgency.indexOf("Urgent") != -1)
+              return requestersUrgency.indexOf("Urgent");
+            
+            if(requestersUrgency.indexOf("Normal") != -1)
+              return requestersUrgency.indexOf("Normal");
+          default://String mismatch
+            return -1;
+        }
+      }
+      
+      private void requestInterpreter(String location, String urgency, int clientID){
         try{
-          if(message.charAt(7) == ':'){//if message is from the requester then...
-            Location location = encodeLocationString(message.substring(8, message.length())); //
+          if(respondersID.size() == 0){//if there are no responders on call then...
+            channel.sendMessage("Searching:", clientID); //tells the requester that it needs to wait
+            requestersID.add(clientID); //adds the requester ID to the backlog
+            requestersLocation.add(location);//adds the requester location to the backlog
+            requestersUrgency.add(urgency);//adds the requesters urgency to the backlog
             
-            if(location == null){//if location was assigned a null value then...
-              channel.sendMessage("The location you submitted was invalid!!!", clientID);//informs the requester that the location they submitted was invalid
-            }
+          }else{//if there are responders then...
+            int respondersIndex = getRespondersIndex(location, urgency, MATCH_TYPE);
             
-            assert (location != null) : "Requester message failure!!!"; //asserts that location must contain a value at this point
-            
-            if(respondersID.size() == 0){//if there are no responders on call then...
-              channel.sendMessage("Searching:", clientID); //tells the requester that it needs to wait
-              requestersID.add(clientID); //adds the requester ID to the backlog
-              requestersLocation.add(location);//adds the requester location to the backlog
-              
-            }else{//if there are responders then...
-              channel.sendMessage("Assigned:" + respondersTeam.removeFirst(), clientID);//sends a message to the requester telling them a responder has been assigned and what team that responder is on
-              channel.sendMessage("Assigned:" + locationToString(location), respondersID.removeFirst());//tells the longest waiting responder they have been assigned and the location of the requester they are to help
-            }
-            
-          }else if(message.charAt(8) == ':'){//if the message is from responders
-            String teamString = message.substring(9, message.length());
-            
-            if(requestersID.size() == 0){//if there are no backlogged requesters then...
-              channel.sendMessage("Searching:", clientID);//tell the responder they need to wait
-              respondersID.add(clientID);//log the responder ID
-              respondersTeam.add(teamString);//log the responders team
-              
-            }else{//if there are backlogged requesters then...
-              channel.sendMessage("Assigned:" + teamString, requestersID.removeFirst());//tell the longest waiting requester a responder has been assigned and the team of that responder
-              channel.sendMessage("Assigned:" + locationToString(requestersLocation.removeFirst()), clientID);//tell the responder they have been assigned and the location of the requester they are picking up
-            }
-          } else {//if the ':' was not found at either index 7 or 8 then...
-            System.out.println("message format error. ':' in the wrong place!!!");
-            channel.sendMessage("message format error. ':' in the wrong place!!!", clientID);
+            channel.sendMessage("Assigned:" + respondersTeam.remove(respondersIndex) + ".  Time to your location is approximately " + distance(respondersLocation.remove(respondersIndex), location) + " mitnute(s).", clientID);//sends a message to the requester telling them a responder has been assigned and what team that responder is on
+            channel.sendMessage("Assigned:" + location + " - " + urgency, respondersID.remove(respondersIndex));//tells the longest waiting responder they have been assigned and the location of the requester they are to help
           }
         }catch(ChannelException e){//catch for all that channel stuff
-          System.out.println("Exception occured while sending message!!!");
-          e.printStackTrace();
+          System.out.println("Exception occured while sending a message after being contacted by a requester!!!");
         }
+      }
+      
+      private void responseInterpreter(String helpTeam, String location, int clientID){
+        try{
+          if(requestersID.size() == 0){//if there are no backlogged requesters then...
+            channel.sendMessage("Searching:", clientID);//tell the responder they need to wait
+            respondersID.add(clientID);//log the responder ID
+            respondersTeam.add(helpTeam);//log the responders team
+            respondersLocation.add(location);//log the responders location
+            
+          }else{//if there are backlogged requesters then...
+            int requestersIndex = getRequestersIndex(helpTeam, location, MATCH_TYPE);
+            
+            channel.sendMessage("Assigned:" + helpTeam + ".  Time to your location is approximately " + distance(location, requestersLocation.get(requestersIndex)) + " mitnute(s).", requestersID.remove(requestersIndex));//tell the longest waiting requester a responder has been assigned and the team of that responder
+            channel.sendMessage("Assigned:" + requestersLocation.remove(requestersIndex) + " - " + requestersUrgency.remove(requestersIndex), clientID);//tell the responder they have been assigned and the location of the requester they are picking up
+          }
+        }catch(ChannelException e){//catch for all that channel stuff
+          System.out.println("Exception occured while sending a message after being contacted by a responder!!!");
+        }
+      }
+      
+      public void messageReceived(String message, int clientID){//when a message is received by a requester then...
+        String[] splitString = message.split(":");
+        String clientType = splitString[0];
+        
+        if(clientType.equals("Request")){
+          splitString = splitString[1].split("|");
+          String location = splitString[0];
+          String urgency = splitString[1];
+          
+          requestInterpreter(location, urgency, clientID);
+        }else if(clientType.equals("Response")){
+          splitString = splitString[1].split("|");
+          String helpTeam = splitString[0];
+          String location = splitString[1];
+          
+          responseInterpreter(helpTeam, location, clientID);
+        }
+        
+        /*switch(MATCH_TYPE){
+         case 0:
+         fCFSMode(clientType, location, clientID);
+         case 1:
+         closestMode(clientType, location, clientID);
+         case 2:
+         urgencyMode(clientType, location, urgency, clientID);
+         }*/
       }
     });
   }
   
-  /**
-   * Converts the passed string into a constant of enum Location
-   * 
-   * @param locationString 
-   * the string of the location
-   * 
-   * @return Location
-   * the location as a member of enum Location or null if the string didn't match anything
-   */
-  private Location encodeLocationString(String locationString){
+  private int getShortestDistance(String start, LinkedList<String> endList){
+    int min = Integer.MAX_VALUE;
+    int minIndex = -1;
     
-    if (locationString.equals("CL50 - Class of 1950 Lecture Hall")){
-      return Location.CL50;
-    } else if (locationString.equals("EE - Electrical Engineering Building")){
-      return Location.EE;
-    } else if (locationString.equals("LWSN - Lawson Computer Science Building")){
-      return Location.LWSN;
-    } else if (locationString.equals("PMU - Purdue Memorial Union")){
-      return Location.PMU;
-    } else if (locationString.equals("PUSH - Purdue University Student Health Center")){
-      return Location.PUSH;
-    } else {
-      return null;
+    for(int i = 0; i < endList.size(); i++){
+      if (distance(start, endList.get(i)) < min){
+        min = distance(start, endList.get(i));
+        minIndex = i;
+      }
+      
+      return minIndex;
     }
+    
+    return -1;
   }
   
-  /**
-   * Converts the passed constant of enum Location into a string to send to the Responer's client
-   * 
-   * @param Location loc
-   * the enum Location to be converted to a string
-   * 
-   * @return String
-   * the String to be passed to the Responder's client
-   */
-  private String locationToString(Location loc){
-    switch (loc) {
-      case CL50:
-        return "CL50 - Class of 1950 Lecture Hall";
-      case EE:
-        return "EE - Electrical Engineering Building";
-      case LWSN:
-        return "LWSN - Lawson Computer Science Building";
-      case PMU:
-        return "PMU - Purdue Memorial Union";
-      case PUSH:
-        return "PUSH - Purdue University Student Health Center";
-      default:
-        return null;
+  private int distance(String start, String end){
+    String[] place = {"CL50 - Class of 1950 Lecture Hall", "EE - Electrical Engineering Building", 
+      "LWSN - Lawson Computer Science Building", "PMU - Purdue Memorial Union", 
+      "PUSH - Purdue University Student Health Center"};
+    
+    int[][] distance = {
+      {0,8,6,5,4},
+      {8,0,4,2,5},
+      {6,4,0,3,1},
+      {5,2,3,0,7},
+      {4,5,1,7,0}};
+    
+    int startNum = -1;
+    int endNum = -1;
+    
+    for(int i = 0; i < place.length; i++){
+      if(place[i].equals(start))
+        startNum = i;
+      
+      if(place[i].equals(end))
+        endNum = i;
     }
+    
+    return distance[startNum][endNum];
   }
   
   public static void main(String[] args){
     Scanner s = new Scanner(System.in);//to get input from the console
-    Server server = new Server(Integer.parseInt(args[0]));//creates a server object that uses a port passed from the comsole
+    final int MATCH_TYPE;
+    if (args[1].equalsIgnoreCase("FCFS")){
+      MATCH_TYPE = 0;
+    } else if (args[1].equalsIgnoreCase("CLOSEST")) {
+      MATCH_TYPE = 1;
+    } else if (args[1].equalsIgnoreCase("URGENCY")) {
+      MATCH_TYPE = 2;
+    } else {
+      MATCH_TYPE = -1;
+    }
+    
+    Server server = new Server(Integer.parseInt(args[0]), MATCH_TYPE);//creates a server object that uses a port passed from the comsole
     
     while(true){//a loop that runs until "exit" is typed into the console
       if(s.nextLine().equals("exit")){
