@@ -127,7 +127,7 @@ class Server{
     });
   }
   
-  private int getShortestDistance(String start, LinkedList<String> endList){
+  public static int getShortestDistance(String start, LinkedList<String> endList){
     int min = Integer.MAX_VALUE;
     int minIndex = -1;
     
@@ -143,7 +143,7 @@ class Server{
     return -1;
   }
   
-  private int distance(String start, String end){
+  public static int distance(String start, String end){
     String[] place = {"CL50 - Class of 1950 Lecture Hall", "EE - Electrical Engineering Building", 
       "LWSN - Lawson Computer Science Building", "PMU - Purdue Memorial Union", 
       "PUSH - Purdue University Student Health Center"};
