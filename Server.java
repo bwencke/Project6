@@ -123,15 +123,6 @@ class Server{
           
           responseInterpreter(helpTeam, location, clientID);
         }
-        
-        /*switch(MATCH_TYPE){
-         case 0:
-         fCFSMode(clientType, location, clientID);
-         case 1:
-         closestMode(clientType, location, clientID);
-         case 2:
-         urgencyMode(clientType, location, urgency, clientID);
-         }*/
       }
     });
   }
